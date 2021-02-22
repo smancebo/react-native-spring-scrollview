@@ -1,5 +1,5 @@
 {
-  "name": "rn-spring-scrollview",
+  "name": "rn-spring-scrollview-v2",
   "version": "2.1.2",
   "description": "A cross-platform (iOS & Android) spring ScrollView",
   "main": "index.js",
