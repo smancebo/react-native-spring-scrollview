@@ -8,7 +8,6 @@
 
 import * as React from "react";
 import {
-  Animated,
   requireNativeComponent,
   View,
   findNodeHandle,
@@ -21,6 +20,7 @@ import {
   ViewStyle,
   ScrollView
 } from "react-native";
+import Animated from 'react-native-reanimated';
 import * as TextInputState from "react-native/Libraries/Components/TextInput/TextInputState";
 import { FooterStatus } from "./LoadingFooter";
 import { NormalHeader } from "./NormalHeader";
@@ -31,8 +31,8 @@ import type { Offset, SpringScrollViewPropType } from "./Types";
 import { styles } from "./styles";
 
 export class SpringScrollView extends React.PureComponent<SpringScrollViewPropType> {
-  _offsetY: Animated.Value;
-  _offsetX: Animated.Value;
+  _offsetY: Animated.Value<number>;
+  _offsetX: Animated.Value<number>;
   _offsetYValue: number = 0;
   _event;
   _keyboardHeight: number;
@@ -41,7 +41,7 @@ export class SpringScrollView extends React.PureComponent<SpringScrollViewPropTy
   _width: number;
   _height: number;
   _scrollView: View;
-  _indicatorOpacity: Animated.Value = new Animated.Value(1);
+  _indicatorOpacity: Animated.Value<number> = new Animated.Value(1);
   _contentHeight: number;
   _contentWidth: number;
   _refreshStatus: HeaderStatus = "waiting";
@@ -71,19 +71,19 @@ export class SpringScrollView extends React.PureComponent<SpringScrollViewPropTy
     };
     this._offsetY = this._nativeOffset.y;
     this._offsetX = this._nativeOffset.x;
-    this._event = Animated.event(
-      [
-        {
-          nativeEvent: {
-            contentOffset: this._nativeOffset
-          }
-        }
-      ],
-      {
-        useNativeDriver: true,
-        listener: this._onScroll
-      }
-    );
+    // this._event = Animated.event(
+    //   [
+    //     {
+    //       nativeEvent: {
+    //         contentOffset: this._nativeOffset
+    //       }
+    //     }
+    //   ],
+    //   {
+    //     useNativeDriver: true,
+    //     listener: this._onScroll
+    //   }
+    // );
   }
 
   render() {
@@ -106,14 +106,14 @@ export class SpringScrollView extends React.PureComponent<SpringScrollViewPropTy
         {...this.props}
         ref={ref => (this._scrollView = ref)}
         style={Platform.OS === "android" ? wStyle : { flex: 1 }}
-        onScroll={this._event}
+        onScroll={this._onScroll}
         refreshHeaderHeight={onRefresh ? Refresh.height : 0}
         loadingFooterHeight={onLoading ? Loading.height : 0}
         onLayout={this._onWrapperLayoutChange}
         onTouchBegin={Platform.OS === "android" && this._onTouchBegin}
         onTouchStart={Platform.OS === "ios" && this._onTouchBegin}
         onMomentumScrollEnd={this._onMomentumScrollEnd}
-        scrollEventThrottle={1}
+        scrollEventThrottle={16}
         onNativeContentOffsetExtract={this._nativeOffset}
       >
         <SpringScrollContentViewNative
@@ -332,6 +332,8 @@ export class SpringScrollView extends React.PureComponent<SpringScrollViewPropTy
     if (!this._indicatorAnimation) {
       this._indicatorOpacity.setValue(1);
     }
+    this._nativeOffset.x.setValue(x);
+    this._nativeOffset.y.setValue(y);
   };
 
   _toRefreshStatus(status: HeaderStatus) {
