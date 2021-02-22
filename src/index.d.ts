@@ -6,7 +6,7 @@
  * Description:
  */
 
-declare module "react-native-spring-scrollview" {
+declare module "rn-spring-scrollview-v2" {
   import { Animated, ViewProps, ViewStyle } from "react-native";
   import * as React from "react";
 
