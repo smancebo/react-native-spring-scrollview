@@ -20,7 +20,7 @@ import {
   ViewStyle,
   ScrollView
 } from "react-native";
-import Animated from 'react-native-reanimated';
+import Animated, { Easing } from 'react-native-reanimated';
 import * as TextInputState from "react-native/Libraries/Components/TextInput/TextInputState";
 import { FooterStatus } from "./LoadingFooter";
 import { NormalHeader } from "./NormalHeader";
@@ -298,19 +298,23 @@ export class SpringScrollView extends React.PureComponent<SpringScrollViewPropTy
 
   _beginIndicatorDismissAnimation() {
     this._indicatorOpacity.setValue(1);
-    this._indicatorAnimation && this._indicatorAnimation.stop();
-    this._indicatorAnimation = Animated.timing(this._indicatorOpacity, {
-      toValue: 0,
-      delay: 500,
-      duration: 500,
-      useNativeDriver: true
-    });
+    try {
+      this._indicatorAnimation && this._indicatorAnimation.stop();
+      this._indicatorAnimation = Animated.timing(this._indicatorOpacity, {
+        toValue: 0,
+        duration: 500,
+        easing: Easing.ease
+      });
     this._indicatorAnimation.start(({ finished }) => {
       if (!finished) {
         this._indicatorOpacity.setValue(1);
       }
       this._indicatorAnimation = null;
     });
+    } catch(e) {
+
+    }
+    
   }
 
   _onScroll = e => {
